@@ -400,7 +400,8 @@ export async function POST(request: NextRequest) {
           timeRange: data.timeRange,
           status: 'Processing',
           estimatedTime: '2-3 minutes',
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          downloadUrl: ''
         };
 
         // Simulate export processing

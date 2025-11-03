@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import {
   LayoutDashboard,
   BookOpen,
@@ -23,133 +25,81 @@ import {
   X
 } from 'lucide-react';
 
-// Import all page components
-import StudentOverview from './pages/StudentOverview';
-import StudentAcademics from './pages/StudentAcademics';
-import StudentAssignments from './pages/StudentAssignments';
-import StudentCourses from './pages/StudentCourses';
-import StudentTimetable from './pages/StudentTimetable';
-import StudentAttendance from './pages/StudentAttendance';
-import StudentExams from './pages/StudentExams';
-import StudentFees from './pages/StudentFees';
-import StudentLibrary from './pages/StudentLibrary';
-import StudentProfile from './pages/StudentProfile';
-
-export type StudentPage = 
-  | 'overview' 
-  | 'academics' 
-  | 'assignments' 
-  | 'courses' 
-  | 'timetable' 
-  | 'attendance' 
-  | 'exams' 
-  | 'fees' 
-  | 'library' 
-  | 'profile';
-
 interface NavigationItem {
-  id: StudentPage;
   label: string;
+  href: string;
   icon: React.ReactNode;
   badge?: number;
 }
 
 const navigationItems: NavigationItem[] = [
   {
-    id: 'overview',
-    label: 'Overview',
+    label: 'Dashboard',
+    href: '/student/dashboard',
     icon: <LayoutDashboard className="h-4 w-4" />
   },
   {
-    id: 'academics',
     label: 'Academics',
+    href: '/student/academics',
     icon: <BookOpen className="h-4 w-4" />
   },
   {
-    id: 'assignments',
     label: 'Assignments',
+    href: '/student/assignments',
     icon: <FileText className="h-4 w-4" />,
     badge: 3
   },
   {
-    id: 'courses',
     label: 'Courses',
+    href: '/student/courses',
     icon: <BookOpen className="h-4 w-4" />
   },
   {
-    id: 'timetable',
     label: 'Timetable',
+    href: '/student/timetable',
     icon: <Calendar className="h-4 w-4" />
   },
   {
-    id: 'attendance',
     label: 'Attendance',
+    href: '/student/attendance',
     icon: <CalendarDays className="h-4 w-4" />
   },
   {
-    id: 'exams',
     label: 'Exams',
+    href: '/student/exams',
     icon: <ClipboardList className="h-4 w-4" />,
     badge: 2
   },
   {
-    id: 'fees',
     label: 'Fees',
+    href: '/student/fees',
     icon: <CreditCard className="h-4 w-4" />
   },
   {
-    id: 'library',
     label: 'Library',
+    href: '/student/library',
     icon: <Library className="h-4 w-4" />
   },
   {
-    id: 'profile',
     label: 'Profile',
+    href: '/student/profile',
     icon: <User className="h-4 w-4" />
   }
 ];
 
-const StudentDashboardLayout: React.FC = () => {
+interface StudentDashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+export const StudentDashboardLayout: React.FC<StudentDashboardLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
-  const [currentPage, setCurrentPage] = useState<StudentPage>('overview');
+  const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications] = useState(5); // Mock notification count
 
-  const renderCurrentPage = () => {
-    switch (currentPage) {
-      case 'overview':
-        return <StudentOverview />;
-      case 'academics':
-        return <StudentAcademics />;
-      case 'assignments':
-        return <StudentAssignments />;
-      case 'courses':
-        return <StudentCourses />;
-      case 'timetable':
-        return <StudentTimetable />;
-      case 'attendance':
-        return <StudentAttendance />;
-      case 'exams':
-        return <StudentExams />;
-      case 'fees':
-        return <StudentFees />;
-      case 'library':
-        return <StudentLibrary />;
-      case 'profile':
-        return <StudentProfile />;
-      default:
-        return <StudentOverview />;
-    }
-  };
-
-  const handlePageChange = (page: StudentPage) => {
-    setCurrentPage(page);
-    setSidebarOpen(false);
-  };
-
   const getCurrentPageTitle = () => {
-    const currentItem = navigationItems.find(item => item.id === currentPage);
-    return currentItem?.label || 'Overview';
+    const currentItem = navigationItems.find(item => item.href === pathname);
+    return currentItem?.label || 'Dashboard';
   };
 
   return (
@@ -184,12 +134,13 @@ const StudentDashboardLayout: React.FC = () => {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
             {navigationItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handlePageChange(item.id)}
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                  currentPage === item.id
+                  pathname === item.href
                     ? "bg-blue-50 text-blue-700 border-l-4 border-blue-700"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 )}
@@ -203,7 +154,7 @@ const StudentDashboardLayout: React.FC = () => {
                     {item.badge}
                   </Badge>
                 )}
-              </button>
+              </Link>
             ))}
           </nav>
 
@@ -216,23 +167,24 @@ const StudentDashboardLayout: React.FC = () => {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.name}
+                  {user?.name || 'Student'}
                 </p>
                 <p className="text-xs text-gray-500 truncate">
-                  {user?.profile?.studentId}
+                  {user?.email || 'student@school.edu'}
                 </p>
               </div>
             </div>
             <div className="space-y-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => handlePageChange('profile')}
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </Button>
+              <Link href="/student/profile">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start"
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="sm"
@@ -266,7 +218,7 @@ const StudentDashboardLayout: React.FC = () => {
                   {getCurrentPageTitle()}
                 </h1>
                 <p className="text-sm text-gray-500">
-                  Welcome back, {user?.name?.split(' ')[0]}
+                  Welcome back, {user?.name?.split(' ')[0] || 'Student'}
                 </p>
               </div>
             </div>
@@ -294,7 +246,7 @@ const StudentDashboardLayout: React.FC = () => {
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-gray-50">
           <div className="p-4 lg:p-6">
-            {renderCurrentPage()}
+            {children}
           </div>
         </main>
       </div>

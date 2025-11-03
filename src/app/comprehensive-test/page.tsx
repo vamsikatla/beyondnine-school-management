@@ -66,7 +66,7 @@ export default function ComprehensiveTestPage() {
       } catch (error) {
         results.localStorage = {
           success: false,
-          error: error.message
+          error: error instanceof Error ? error.message : 'Unknown error'
         };
       }
       
@@ -74,7 +74,7 @@ export default function ComprehensiveTestPage() {
       console.error('Test error:', error);
       results.general = {
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : 'Unknown error'
       };
     } finally {
       setTestResults(results);

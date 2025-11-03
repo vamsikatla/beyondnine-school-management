@@ -315,7 +315,7 @@ const SuperAdminDashboard = () => {
                 <Button variant="outline" size="sm">
                   <Bell className="h-4 w-4" />
                 </Button>
-                <Button variant="gradient" size="sm" onClick={() => setShowAddSchool(true)}>
+                <Button variant="default" size="sm" onClick={() => setShowAddSchool(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add School
                 </Button>
@@ -459,7 +459,7 @@ const SuperAdminDashboard = () => {
                   <Input
                     placeholder="Search schools..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     className="w-full"
                   />
                 </div>
